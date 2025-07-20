@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-20 17:01:34.030114",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "descricao",
+  "valor_unitario",
+  "quantidade",
+  "valor_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "formula_execution_mode": "Always",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "item.valor",
+   "fieldname": "valor_unitario",
+   "fieldtype": "Currency",
+   "formula_execution_mode": "Always",
+   "in_list_view": 1,
+   "label": "Valor Un.",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "quantidade",
+   "fieldtype": "Int",
+   "formula_execution_mode": "Always",
+   "in_list_view": 1,
+   "label": "Quantidade",
+   "precision": "4",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valor_total",
+   "fieldtype": "Currency",
+   "formula_execution_mode": "Always",
+   "in_list_view": 1,
+   "label": "Valor Total",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item.descricao",
+   "fieldname": "descricao",
+   "fieldtype": "Data",
+   "formula_execution_mode": "Always",
+   "label": "Descri\u00e7\u00e3o"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-20 20:01:32.235428",
+ "modified_by": "Administrator",
+ "module": "Treino",
+ "name": "compra_itens",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

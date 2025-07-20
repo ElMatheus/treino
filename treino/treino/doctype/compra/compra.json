@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "COMPRA-.####",
+ "creation": "2025-07-20 16:58:53.961136",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_p2it",
+  "amended_from",
+  "data_da_compra",
+  "itens",
+  "section_break_uvhl",
+  "total_de_itens",
+  "column_break_hqdy",
+  "valor_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_p2it",
+   "fieldtype": "Section Break",
+   "formula_execution_mode": "Always"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "formula_execution_mode": "Always",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Compra",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "data_da_compra",
+   "fieldtype": "Datetime",
+   "formula_execution_mode": "Always",
+   "in_list_view": 1,
+   "label": "Data da Compra",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valor_total",
+   "fieldtype": "Currency",
+   "formula_execution_mode": "Always",
+   "label": "Valor Total (R$)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_uvhl",
+   "fieldtype": "Section Break",
+   "formula_execution_mode": "Always"
+  },
+  {
+   "fieldname": "total_de_itens",
+   "fieldtype": "Int",
+   "formula_execution_mode": "Always",
+   "label": "Total de Itens",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hqdy",
+   "fieldtype": "Column Break",
+   "formula_execution_mode": "Always"
+  },
+  {
+   "fieldname": "itens",
+   "fieldtype": "Table",
+   "formula_execution_mode": "Always",
+   "label": "Itens da Compra",
+   "options": "compra_itens"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-20 17:12:06.119721",
+ "modified_by": "Administrator",
+ "module": "Treino",
+ "name": "Compra",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
