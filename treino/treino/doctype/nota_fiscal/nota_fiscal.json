@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "NF-.#####",
+ "creation": "2025-08-14 15:14:04.000702",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_41pw",
+  "amended_from",
+  "data_nota",
+  "compra",
+  "status",
+  "cliente",
+  "itens",
+  "section_break_dyae",
+  "total_itens",
+  "column_break_qtov",
+  "valor_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_41pw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Nota Fiscal",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "compra",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Compra",
+   "no_copy": 1,
+   "options": "Compra",
+   "print_hide": 1,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "data_nota",
+   "fieldtype": "Date",
+   "label": "Data Da Nota",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "Gerado",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Gerado\nEmitido",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "compra.cliente",
+   "fieldname": "cliente",
+   "fieldtype": "Link",
+   "label": "Cliente",
+   "options": "Compradores",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "itens",
+   "fieldtype": "Table",
+   "label": "Itens",
+   "options": "compra_itens",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_dyae",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_itens",
+   "fieldtype": "Int",
+   "label": "Total de Itens",
+   "read_only": 1
+  },
+  {
+   "fieldname": "valor_total",
+   "fieldtype": "Currency",
+   "label": "Valor Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qtov",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-15 16:07:01.880628",
+ "modified_by": "Administrator",
+ "module": "Treino",
+ "name": "Nota Fiscal",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Green",
+   "title": "Emitido"
+  }
+ ]
+}

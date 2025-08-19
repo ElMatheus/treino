@@ -3,33 +3,69 @@
 
 import frappe
 from frappe.model.document import Document
-
+from frappe.utils import now
 
 class Compra(Document):
-   def validate(self):
-       check_inventory_availability(self.itens)
-       
-   def on_submit(self):
-        # Lógica para executar quando o documento for submetido
-        frappe.msgprint("Compra submetida com sucesso!")
-        for item in self.itens:
-            try:
-                item_doc = frappe.get_doc('Item', item.get('item'))
-                item_doc.update_inventory(item.get('quantidade'))
-            except Exception as e:
-                frappe.throw(f"Erro ao atualizar o estoque do item {item.get('item')}: {str(e)}")
+  def before_save(self):
+    valor_total = sum(p.valor_total for p in self.itens)
+    itens_total = sum(p.quantidade for p in self.itens)
+    self.valor_total = valor_total
+    self.total_de_itens = itens_total
+  def on_submit(self):
+      controleEstoque(self.itens, False)
+      frappe.get_doc({
+        "doctype": "Historico de Compra",
+        'compra_ref': self.name,
+        "compra_itens": self.itens
+    }).insert()
+  def on_cancel(self):
+      controleEstoque(self.itens, True)
+      
+def controleEstoque(itens, metodo):
+    for item in itens:
+        doc = frappe.get_value('Item', item.item, ['quantidade_em_estoque', 'descricao'], as_dict=True)
+        if metodo:
+            nova_quantidade = doc['quantidade_em_estoque'] + item.quantidade
+        else:
+            if doc['quantidade_em_estoque'] < item.quantidade :
+                frappe.throw(f"Não temos estoque suficiente para o produto {doc['descricao']}.")
+            nova_quantidade = doc['quantidade_em_estoque'] - item.quantidade
+        frappe.set_value('Item', item.item, {
+            'quantidade_em_estoque': nova_quantidade
+        })
+        frappe.msgprint(f"Estoque do item {doc['descricao']} atualizado com sucesso.")
+        
+@frappe.whitelist()
+def criar_nota_fiscal(itensParam, compra):
+    itens = frappe.parse_json(itensParam)
+    if not itens:
+        frappe.toast("Por favor, selecione ao menos um item antes de criar a nota fiscal.")
+        return None
 
+    doc_nota = frappe.get_doc({
+        'doctype': 'Nota Fiscal',   
+        'data_nota': now(), 
+        'compra': compra,          
+        'itens': itens
+    })
+    doc_nota.insert()
+    return doc_nota.name    
 
 @frappe.whitelist()
-def check_inventory_availability(itens):
-    if isinstance(itens, str):
-        itens = frappe.parse_json(itens)
-    if not isinstance(itens, list):
-        frappe.throw("Itens deve ser uma lista.")
-
-    for item in itens:
-        quantidade_em_estoque = frappe.db.get_value('Item', item.get('item'), 'quantidade_em_estoque')
-        if item.get('quantidade') > quantidade_em_estoque:
-            frappe.throw(f"Estoque insuficiente para o item {item.get('item')}. Disponível: {quantidade_em_estoque}, Necessário: {item.get('quantidade')}.")
-
-    return True
+def criar_comprador(values):
+    data = now()
+    doc = frappe.new_doc("Compradores")
+    form = frappe.parse_json(values) 
+    doc.nome = form.get('nome')
+    doc.cliente_desde = data
+    doc.email = form.get('email')
+    doc.data_nascimento = form.get('data_nascimento')
+    doc.tipo_pessoa = form.get('tipo_pessoa')
+    doc.cnpj = form.get('cnpj')
+    doc.rg = form.get('rg')
+    doc.cpf = form.get('cpf')
+    doc.save()
+    return {
+        'nome': doc.nome,
+        'name': doc.name
+    }

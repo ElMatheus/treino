@@ -1,51 +1,44 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-07-20 17:01:34.030114",
+ "creation": "2025-08-12 09:01:07.196893",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "item",
-  "valor_unitario",
-  "quantidade",
+  "preco_fornecedor",
+  "desconto",
   "valor_total"
  ],
  "fields": [
   {
-   "fieldname": "item",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Item",
-   "options": "Item",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "fetch_from": "item.valor",
-   "fetch_if_empty": 1,
-   "fieldname": "valor_unitario",
+   "fieldname": "preco_fornecedor",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Valor Un.",
+   "label": "Pre\u00e7o",
    "precision": "2",
    "reqd": 1
   },
   {
-   "default": "1",
-   "fieldname": "quantidade",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "Quantidade",
-   "precision": "4",
+   "default": "0",
+   "fieldname": "desconto",
+   "fieldtype": "Percent",
+   "label": "Desconto",
    "reqd": 1
   },
   {
    "fieldname": "valor_total",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Valor Total",
    "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "Item",
    "reqd": 1
   }
  ],
@@ -53,14 +46,14 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-14 12:03:57.061439",
+ "modified": "2025-08-14 09:32:41.585163",
  "modified_by": "Administrator",
  "module": "Treino",
- "name": "compra_itens",
+ "name": "Itens Fornecedor",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
- "sort_field": "modified",
+ "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
 }

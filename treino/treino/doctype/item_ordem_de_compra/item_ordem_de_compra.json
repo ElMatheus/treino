@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "ITEM_OC-.####",
+ "creation": "2025-08-06 15:31:06.790240",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "valor_pago",
+  "quantidade",
+  "valor_total",
+  "preco_sugerido",
+  "lucro"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "quantidade",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Quantidade"
+  },
+  {
+   "fieldname": "valor_pago",
+   "fieldtype": "Currency",
+   "label": "Valor Pago",
+   "precision": "2",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "preco_sugerido",
+   "fieldtype": "Currency",
+   "label": "Pre\u00e7o Sugerido",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lucro",
+   "fieldtype": "Percent",
+   "label": "Porcentagem de Lucro",
+   "precision": "2"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valor_total",
+   "fieldtype": "Currency",
+   "label": "Valor Total",
+   "precision": "2",
+   "read_only": 1,
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-08-13 10:46:53.060152",
+ "modified_by": "Administrator",
+ "module": "Treino",
+ "name": "Item Ordem de Compra",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

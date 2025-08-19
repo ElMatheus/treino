@@ -9,6 +9,9 @@
   "section_break_p2it",
   "amended_from",
   "data_da_compra",
+  "cliente",
+  "historico_compra",
+  "criar_cliente",
   "itens",
   "section_break_uvhl",
   "total_de_itens",
@@ -18,13 +21,11 @@
  "fields": [
   {
    "fieldname": "section_break_p2it",
-   "fieldtype": "Section Break",
-   "formula_execution_mode": "Always"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "amended_from",
    "fieldtype": "Link",
-   "formula_execution_mode": "Always",
    "label": "Amended From",
    "no_copy": 1,
    "options": "Compra",
@@ -35,49 +36,63 @@
   {
    "fieldname": "data_da_compra",
    "fieldtype": "Datetime",
-   "formula_execution_mode": "Always",
    "in_list_view": 1,
    "label": "Data da Compra",
    "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "valor_total",
    "fieldtype": "Currency",
-   "formula_execution_mode": "Always",
    "label": "Valor Total (R$)",
+   "options": "Currency",
    "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "section_break_uvhl",
-   "fieldtype": "Section Break",
-   "formula_execution_mode": "Always"
+   "fieldtype": "Section Break"
   },
   {
+   "default": "0",
    "fieldname": "total_de_itens",
    "fieldtype": "Int",
-   "formula_execution_mode": "Always",
    "label": "Total de Itens",
    "read_only": 1
   },
   {
    "fieldname": "column_break_hqdy",
-   "fieldtype": "Column Break",
-   "formula_execution_mode": "Always"
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "itens",
    "fieldtype": "Table",
-   "formula_execution_mode": "Always",
    "label": "Itens da Compra",
    "options": "compra_itens"
+  },
+  {
+   "fieldname": "cliente",
+   "fieldtype": "Link",
+   "label": "Cliente",
+   "options": "Compradores",
+   "reqd": 1
+  },
+  {
+   "fieldname": "historico_compra",
+   "fieldtype": "Button",
+   "label": "Historico de Compra"
+  },
+  {
+   "fieldname": "criar_cliente",
+   "fieldtype": "Button",
+   "label": "Criar Cliente"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-20 17:12:06.119721",
+ "modified": "2025-08-18 14:47:20.364153",
  "modified_by": "Administrator",
  "module": "Treino",
  "name": "Compra",

@@ -2,372 +2,231 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Compra", {
-    onload(frm) {
-        window.compareGet = async (frm) => {
-            let startTime = performance.now();
-            const dbDoc = await frappe.db.get_doc(frm.doctype, frm.docname);
-            let endTime = performance.now();
-            let duration = endTime - startTime;
-            console.log(`db.get_doc: ${duration} ms`);
+    refresh(frm) {
+        if (frm.doc.docstatus === 1) {
+            let itens_data = feedItens(frm.doc.itens);
+            frm.add_custom_button("Gerar Nota", function () {
+                const d = new frappe.ui.Dialog({
+                    title: "Selecione os itens que deseja incluir na Nota Fiscal.",
+                    fields: [
+                        {
+                            label: "Itens da Nota",
+                            fieldname: "itens_nota",
+                            fieldtype: "Table",
+                            cannot_add_rows: true,
+                            cannot_delete_rows: true,
+                            in_place_edit: false,
+                            data: itens_data,
+                            fields: [
+                                {
+                                    label: "Item",
+                                    fieldname: "item",
+                                    fieldtype: "Link",
+                                    options: "Item",
+                                    in_list_view: 1,
+                                    read_only: 1,
+                                },
+                                {
+                                    label: "Valor Unitário",
+                                    fieldname: "valor_unitario",
+                                    fieldtype: "Currency",
+                                    in_list_view: 1,
+                                    read_only: 1
+                                },
+                                {
+                                    label: "Quantidade",
+                                    fieldname: "quantidade",
+                                    fieldtype: "Int",
+                                    in_list_view: 1,
+                                    read_only: 1
+                                }
+                            ]
+                        }
+                    ],
+                    primary_action_label: "Confirmar",
+                    primary_action(values) {
+                        const itens_selecionados = values.itens_nota.filter(i => i.__checked);
+                        frappe.call({
+                            method: "treino.treino.doctype.compra.compra.criar_nota_fiscal",
+                            args: { itensParam: itens_selecionados, compra: frm.doc.name },
+                            callback: function (data) {
+                                if (data.message) {
+                                    frappe.set_route('Form', 'nota-fiscal', data.message);
+                                }
+                            }
+                        });
+                    }
+                });
+                d.show();
+            }).addClass("btn-primary");
+        };
+        frm.toggle_display("historico_compra", !!frm.doc.cliente);
+        frm.toggle_display("criar_cliente", !frm.doc.cliente);
+    },
 
-            startTime = performance.now();
-            const doc = await frappe.get_doc(frm.doctype, frm.docname);
-            endTime = performance.now();
-            duration = endTime - startTime;
-            console.log(`get_doc: ${duration} ms`);
+    cliente(frm) {
+        frm.toggle_display("historico_compra", !!frm.doc.cliente);
+        frm.toggle_display("criar_cliente", !frm.doc.cliente);
+    },
 
-            startTime = performance.now();
-            const dbGetValues = await frappe.db.get_value(
-                frm.doctype,
-                frm.docname,
-                ["valor_total", "data_da_compra", "total_de_itens"],
-            )
-            endTime = performance.now();
-            duration = endTime - startTime;
-            console.log(`db.get_value: ${duration} ms`);
-
-            startTime = performance.now();
-            const getValues = await frappe.model.get_value(
-                frm.doctype,
-                frm.docname,
-                ["valor_total", "data_da_compra", "total_de_itens"],
-            )
-            endTime = performance.now();
-            duration = endTime - startTime;
-            console.log(`get_value: ${duration} ms`);
+    historico_compra(frm) {
+        if (frm.doc.cliente) {
+            frappe.set_route('List', 'Historico de Compra', {
+                cliente: frm.doc.cliente
+            })
         }
     },
-	refresh(frm) {
-        frappe.toast('Atualizando...');
-	},
 
-    validate(frm) {
-        if (frm.doc.itens) {
-            checkInventoryAvailability(frm);
-        }
-    },
-    itens_add(frm, cdt, cdn) {
-        frappe.msgprint('Item adicionado com sucesso!');
-    },
+    criar_cliente(frm) {
+        const dialog = new frappe.ui.Dialog({
+            title: 'Cadastrar novo cliente',
+            fields: [
+                {
+                    fieldtype: 'Data',
+                    fieldname: 'nome',
+                    label: 'Nome do Cliente',
+                    reqd: 1
+                },
+                {
+                    fieldtype: 'Data',
+                    fieldname: 'email',
+                    label: 'Email'
+                },
+                {
+                    fieldtype: 'Date',
+                    fieldname: 'data_nascimento',
+                    label: 'Data de Nascimento'
+                },
+                {
+                    fieldtype: 'Select',
+                    fieldname: 'tipo_pessoa',
+                    label: 'Tipo de pessoa',
+                    options: 'Física\nJurídica'
+                },
+                {
+                    fieldtype: 'Data',
+                    fieldname: 'cnpj',
+                    label: 'CNPJ',
+                    length: 18,
+                    depends_on: 'eval:doc.tipo_pessoa=="Jurídica"',
+                },
+                {
+                    fieldtype: 'Data',
+                    fieldname: 'rg',
+                    label: 'RG',
+                    length: 12,
+                    depends_on: 'eval:doc.tipo_pessoa=="Física"',
+                },
+                {
+                    fieldtype: 'Data',
+                    fieldname: 'cpf',
+                    label: 'CPF',
+                    length: 14,
+                    depends_on: 'eval:doc.tipo_pessoa=="Física"',
+                },
+            ],
+            primary_action_label: 'Salvar',
+            primary_action: (values) => {
+                frappe.call({
+                    method: "treino.treino.doctype.compra.compra.criar_comprador",
+                    args: {
+                        values: values
+                    },
+                    callback(r) {
+                        const response = r.message;
+                        frappe.toast(`Cliente "${response.nome}" foi criado com sucesso!`);
+                        frm.doc.cliente = response.name;
+                        frm.refresh_field('cliente');
+                        frm.trigger('cliente');    
+                    }
+                });
+
+                dialog.hide();
+            }
+        });
+
+        dialog.show();
+
+        dialog.fields_dict.cpf.$input.on("keyup", function () {
+            const v = cleanInpt(this, 11)
+
+            let formatted = v.replace(/(\d{3})(\d)/, "$1.$2");
+            formatted = formatted.replace(/(\d{3})(\d)/, "$1.$2");
+            formatted = formatted.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+            $(this).val(formatted);
+        });
+
+        dialog.fields_dict.rg.$input.on("input", function () {
+            const v = cleanInpt(this, 9)
+
+            let formatted = v;
+            if (v.length > 2) formatted = v.replace(/(\d{2})(\d)/, "$1.$2");
+            if (v.length > 5) formatted = formatted.replace(/(\d{3})(\d)/, "$1.$2");
+            if (v.length > 8) formatted = formatted.replace(/(\d{3})(\d{1})$/, "$1-$2");
+
+            $(this).val(formatted);
+        });
+
+        dialog.fields_dict.cnpj.$input.on("input", function () {
+            const v = cleanInpt(this, 14)
+
+            let formatted = v;
+            if (v.length > 2) formatted = v.replace(/(\d{2})(\d)/, "$1.$2");
+            if (v.length > 5) formatted = formatted.replace(/(\d{3})(\d)/, "$1.$2");
+            if (v.length > 8) formatted = formatted.replace(/(\d{3})(\d)/, "$1/$2");
+            if (v.length > 12) formatted = formatted.replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+
+            $(this).val(formatted);
+        });
+    }
 });
 
 frappe.ui.form.on("compra_itens", {
-    itens_add(frm, cdt, cdn) {
-        frm.trigger("valor_total");
-    },
-
-    itens_remove(frm, cdt, cdn) {
-        frm.trigger("valor_total");
-    },
-
-    itens_move(frm, cdt, cdn) {
-        console.log(`Item ${locals[cdt][cdn].descricao} moveu`)
-    },
-
-    item(frm, cdt, cdn) {
-        let item = locals[cdt][cdn];
-
-        if (item.item) {
-            const itemDoc = frappe.get_doc("Item", item.item);
-            if (itemDoc) {
-                item.descricao = itemDoc.descricao;
-                item.valor_unitario = itemDoc.preco_padrao || 0;
-                item.quantidade = 1;
-
-                item.valor_total = item.quantidade * item.valor_unitario;
-                updateValorTotal(frm);
-            }
+    async item(frm, cdt, cdn) {
+        const linha = locals[cdt][cdn];
+        const estoque = await frappe.db.get_value('Item', linha.item, 'quantidade_em_estoque');
+        if (linha.valor_unitario === 0 && estoque.message.quantidade_em_estoque <= 0) {
+            frm.get_field('itens').grid.grid_rows_by_docname[cdn].remove();
+            frm.refresh_field('itens');
+            frappe.throw("Item não está disponível no estoque");
         }
-    },
-
-    quantidade(frm, cdt, cdn) {
-        let item = locals[cdt][cdn];
-        if (item.quantidade < 0) {
-            frappe.msgprint(__("Quantidade não pode ser negativa"));
-            item.quantidade = 0;
-        }
-
-        if (item.valor_unitario) {
-            item.valor_total = item.quantidade * item.valor_unitario;
-            
-        }
-        updateValorTotal(frm);
     },
 
     valor_unitario(frm, cdt, cdn) {
-        let item = locals[cdt][cdn];
-        if (item.valor_unitario < 0) {
-            frappe.msgprint(__("Valor unitário não pode ser negativo"));
-            item.valor_unitario = 0;
-        }
-        if (item.quantidade) {
-            item.valor_total = item.quantidade * item.valor_unitario;
-        }
-        updateValorTotal(frm);
+        const linha = locals[cdt][cdn];
+        calculateValorTotal(linha);
+    },
+
+    quantidade(frm, cdt, cdn) {
+        const linha = locals[cdt][cdn];
+        calculateValorTotal(linha);
     },
 
     valor_total(frm, cdt, cdn) {
-        let item = locals[cdt][cdn];
-        if (item.valor_total < 0) {
-            frappe.msgprint(__("Valor total não pode ser negativo"));
-            item.valor_total = 0;
-        }
-        if (item.quantidade != 0) {
-            item.valor_unitario = getValorUnitario(item);
-        }
-
-        updateValorTotal(frm);
-    },
-
+        const linha = locals[cdt][cdn];
+        const valor_unitario = linha.valor_total / linha.quantidade;
+        linha.valor_unitario = valor_unitario;
+    }
 });
 
-// frappe.ui.form.on("compra_itens", {
-//     itens_add(frm, cdt, cdn) {
-//         frm.trigger("valor_total");
-//     },
+const calculateValorTotal = (linha) => {
+    const valor_total = linha.valor_unitario * linha.quantidade;
+    linha.valor_total = valor_total;
+};
 
-//     itens_remove(frm, cdt, cdn) {
-//         frm.trigger("valor_total");
-//     },
+const feedItens = (itens) => {
+    const itens_data = itens.map(i => ({
+        item: i.item,
+        valor_unitario: i.valor_unitario,
+        quantidade: i.quantidade,
+        valor_total: i.valor_total
+    }));
+    return itens_data;
+};
 
-//     itens_move(frm, cdt, cdn) {
-//         console.log(`Item ${locals[cdt][cdn].descricao} moveu`)
-//     },
-
-//     item(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_unitario && item.quantidade) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-//             updateValorTotal(frm);
-//         }
-//     },
-
-//     quantidade(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.quantidade < 0) {
-//             frappe.msgprint(__("Quantidade não pode ser negativa"));
-//             item.quantidade = 0;
-//         }
-
-//         if (item.valor_unitario) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-            
-//         }
-//         updateValorTotal(frm);
-//     },
-
-//     valor_unitario(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_unitario < 0) {
-//             frappe.msgprint(__("Valor unitário não pode ser negativo"));
-//             item.valor_unitario = 0;
-//         }
-//         if (item.quantidade) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-//         }
-//         updateValorTotal(frm);
-//     },
-
-//     valor_total(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_total < 0) {
-//             frappe.msgprint(__("Valor total não pode ser negativo"));
-//             item.valor_total = 0;
-//         }
-//         if (item.quantidade != 0) {
-//             item.valor_unitario = getValorUnitario(item);
-//         }
-
-//         updateValorTotal(frm);
-//     },
-
-// });
-
-// frappe.ui.form.on("compra_itens", {
-//     itens_add(frm, cdt, cdn) {
-//         frm.trigger("valor_total");
-//     },
-
-//     itens_remove(frm, cdt, cdn) {
-//         frm.trigger("valor_total");
-//     },
-
-//     itens_move(frm, cdt, cdn) {
-//         console.log(`Item ${locals[cdt][cdn].descricao} moveu`)
-//     },
-
-//     item(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_unitario && item.quantidade) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-//             updateValorTotal(frm);
-//         }
-//     },
-
-//     quantidade(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.quantidade < 0) {
-//             frappe.msgprint(__("Quantidade não pode ser negativa"));
-//             item.quantidade = 0;
-//         }
-
-//         if (item.valor_unitario) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-            
-//         }
-//         updateValorTotal(frm);
-//     },
-
-//     valor_unitario(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_unitario < 0) {
-//             frappe.msgprint(__("Valor unitário não pode ser negativo"));
-//             item.valor_unitario = 0;
-//         }
-//         if (item.quantidade) {
-//             item.valor_total = item.quantidade * item.valor_unitario;
-//         }
-//         updateValorTotal(frm);
-//     },
-
-//     valor_total(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         if (item.valor_total < 0) {
-//             frappe.msgprint(__("Valor total não pode ser negativo"));
-//             item.valor_total = 0;
-//         }
-//         if (item.quantidade != 0) {
-//             item.valor_unitario = getValorUnitario(item);
-//         }
-
-//         updateValorTotal(frm);
-//     },
-
-// });
-
-
-// frappe.ui.form.on("compra_itens", {
-//     itens_add(frm, cdt, cdn) {
-//         updateValorTotal(frm);
-//     },
-
-//     itens_remove(frm, cdt, cdn) {
-//         updateValorTotal(frm);
-//     },
-
-//     itens_move(frm, cdt, cdn) {
-//         console.log(`Item ${locals[cdt][cdn].descricao} moveu`)
-//     },
-
-//     item(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         calculateItemTotal(frm, item);
-//     },
-
-//     quantidade(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         calculateQuantidade(frm, item);
-//     },
-
-//     valor_unitario(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         calculateItemUnitario(frm, item);
-//     },
-
-//     valor_total(frm, cdt, cdn) {
-//         let item = locals[cdt][cdn];
-//         calculateItemFromTotal(frm, item);
-//     },
-
-// });
-
-const calculateItemFromTotal = (frm, item) => {
-    if (item.valor_total < 0) {
-        frappe.msgprint(__("Valor total não pode ser negativo"));
-        item.valor_total = 0;
-    }
-    if (item.quantidade != 0) {
-        item.valor_unitario = getValorUnitario(item);
-    }
-
-    updateValorTotal(frm);
-}
-
-const calculateItemUnitario = (frm, item) => {
-    if (item.valor_unitario < 0) {
-        frappe.msgprint(__("Valor unitário não pode ser negativo"));
-        item.valor_unitario = 0;
-    }
-    if (item.quantidade) {
-        item.valor_total = item.valor_total / item.quantidade;
-    }
-    updateValorTotal(frm);
-}
-
-const calculateItemTotal = (frm, item) => {
-    if (item.valor_unitario && item.quantidade) {
-        item.valor_total = item.valor_total / item.quantidade;
-        updateValorTotal(frm);
-    }
-}
-
-const calculateQuantidade = (frm, item) => {
-    if (item.quantidade < 0) {
-        frappe.msgprint(__("Quantidade não pode ser negativa"));
-        item.quantidade = 0;
-    }
-
-    if (item.valor_unitario) {
-        item.valor_total = item.valor_total / item.quantidade;
-        
-    }
-    updateValorTotal(frm);
-}
-
-const updateValorTotal = (frm) => {
-    let valor_total = 0;
-    let total_de_itens = 0;
-    if (frm.doc.itens) {
-        frm.doc.itens.forEach(item => {
-            if (item.valor_total) {
-                valor_total += item.valor_total;
-            }
-            if (item.quantidade) {
-                total_de_itens += item.quantidade;
-            }
-        });
-    } else {
-        valor_total = 0;
-        total_de_itens = 0;
-    }
-
-    frm.set_value("valor_total", valor_total);
-    frm.set_value("total_de_itens", total_de_itens);
-}
-
-const getTotalItem = (item) => {
-    if (item.valor_unitario && item.quantidade) {
-        return item.quantidade * item.valor_unitario;
-    }
-    return 0;
-}
-
-const getValorUnitario = (item) => {
-    if (item.valor_total && item.quantidade) {
-        return item.valor_total / item.quantidade;
-    }
-    return 0;
-}
-
-const checkInventoryAvailability = async (itens) => {
-    const response = await frappe.call({
-        method: "treino.treino.doctype.compra.compra.check_inventory_availability",
-        args: {
-            itens: itens.doc.itens
-        },
-        freeze: true,
-        freeze_message: ("Verificando disponibilidade de estoque...")
-    });
-
-    return response.message;
+const cleanInpt = (input, size) => {
+    const v = $(input).val().replace(/\D/g, "");
+    if (v.length > size) v = v.substring(0, size);
+    return v;
 }

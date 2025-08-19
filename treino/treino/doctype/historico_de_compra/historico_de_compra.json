@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "HCOMPRA-.#####",
+ "creation": "2025-08-18 08:31:28.068723",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "compra_ref",
+  "cliente",
+  "data",
+  "compra_itens",
+  "valor_total"
+ ],
+ "fields": [
+  {
+   "fetch_from": "compra_ref.cliente",
+   "fieldname": "cliente",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cliente",
+   "options": "Compradores",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "compra_ref.data_da_compra",
+   "fieldname": "data",
+   "fieldtype": "Date",
+   "label": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "compra_ref",
+   "fieldtype": "Link",
+   "label": "Compra",
+   "options": "Compra",
+   "reqd": 1
+  },
+  {
+   "fieldname": "compra_itens",
+   "fieldtype": "Table",
+   "label": "Itens",
+   "options": "compra_itens",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "compra_ref.valor_total",
+   "fieldname": "valor_total",
+   "fieldtype": "Currency",
+   "label": "Valor Total",
+   "precision": "2",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-18 09:30:55.689795",
+ "modified_by": "Administrator",
+ "module": "Treino",
+ "name": "Historico de Compra",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
