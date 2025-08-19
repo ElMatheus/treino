@@ -83,7 +83,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-18 09:32:41.318178",
+ "modified": "2025-08-19 11:19:44.955654",
  "modified_by": "Administrator",
  "module": "Treino",
  "name": "Ordem de Compra",
@@ -100,6 +100,20 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Loja",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
