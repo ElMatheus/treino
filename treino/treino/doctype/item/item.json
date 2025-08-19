@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_guest_to_view": 1,
  "allow_rename": 1,
  "autoname": "ITEM-.####",
  "creation": "2025-07-20 16:54:54.444725",
@@ -12,6 +13,9 @@
   "quantidade_em_estoque",
   "category",
   "imagem",
+  "section_break_zduu",
+  "route",
+  "published",
   "section_break_mpkc",
   "descricao_completa"
  ],
@@ -65,12 +69,29 @@
   {
    "fieldname": "section_break_mpkc",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_zduu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route"
+  },
+  {
+   "default": "0",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published"
   }
  ],
  "grid_page_length": 50,
+ "has_web_view": 1,
  "index_web_pages_for_search": 1,
+ "is_published_field": "published",
  "links": [],
- "modified": "2025-08-19 11:22:07.812101",
+ "modified": "2025-08-19 12:56:05.356770",
  "modified_by": "Administrator",
  "module": "Treino",
  "name": "Item",
@@ -103,6 +124,7 @@
   }
  ],
  "quick_entry": 1,
+ "route": "items",
  "row_format": "Dynamic",
  "show_title_field_in_link": 1,
  "sort_field": "modified",

@@ -1,0 +1,14 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+  <h1>{{ title | e }}</h1>
+
+  <div class="product-details">
+    <p><strong>Descrição:</strong> {{ descricao | e }}</p>
+    <p><strong>Valor:</strong> R$ {{ valor | e }}</p>
+    <p><strong>Quantidade em Estoque:</strong> {{ quantidade_em_estoque | e }}</p>
+    <p><strong>Categoria:</strong> {{ category | e }}</p>
+  </div>
+{% endblock %}
+
+<!-- Template de página de produto melhorado -->
