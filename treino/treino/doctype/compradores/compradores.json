@@ -10,6 +10,7 @@
   "cliente_desde",
   "email",
   "data_nascimento",
+  "idade",
   "tipo_pessoa",
   "cnpj",
   "rg",
@@ -32,7 +33,8 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email"
+   "label": "Email",
+   "options": "Email"
   },
   {
    "fieldname": "data_nascimento",
@@ -68,12 +70,18 @@
    "fieldtype": "Data",
    "label": "CPF",
    "length": 14
+  },
+  {
+   "fieldname": "idade",
+   "fieldtype": "Int",
+   "is_virtual": 1,
+   "label": "Idade"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-19 11:24:42.527287",
+ "modified": "2025-08-20 08:32:38.789783",
  "modified_by": "Administrator",
  "module": "Treino",
  "name": "Compradores",
